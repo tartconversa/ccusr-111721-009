@@ -39,6 +39,18 @@ CREATE TABLE IF NOT EXISTS product_inputs (
     PRIMARY KEY(product_id,product_revision,asset_id),
     FOREIGN KEY(product_id,product_revision) REFERENCES products(id,revision)
 );
+CREATE TABLE IF NOT EXISTS rule_revisions (
+    id TEXT PRIMARY KEY, jurisdiction TEXT NOT NULL, classification TEXT NOT NULL,
+    purpose TEXT NOT NULL, decision TEXT NOT NULL,
+    state TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT NOT NULL, created_by TEXT NOT NULL,
+    published_at TEXT, published_revision INTEGER
+);
+CREATE TABLE IF NOT EXISTS rule_previews (
+    id TEXT PRIMARY KEY, revision_id TEXT NOT NULL REFERENCES rule_revisions(id),
+    created_at TEXT NOT NULL, fingerprint TEXT NOT NULL,
+    snapshot TEXT NOT NULL, impacts TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS deliveries (
     id TEXT PRIMARY KEY, product_id TEXT NOT NULL, product_revision INTEGER NOT NULL,
     recipient TEXT NOT NULL, purpose TEXT NOT NULL, created_at TEXT NOT NULL,

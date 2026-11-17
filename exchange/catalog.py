@@ -39,6 +39,16 @@ class Catalog:
             write(self.connection, at, source["owner"], "asset.ingest", asset_id, {"source": source_id, "digest": digest})
         return digest
 
+    def deactivate(self, source_id, at):
+        source = self.connection.execute("SELECT owner,active FROM sources WHERE id=?", (source_id,)).fetchone()
+        if source is None:
+            raise KeyError(source_id)
+        if not source["active"]:
+            raise ValueError("来源已停用")
+        with self.connection:
+            self.connection.execute("UPDATE sources SET active=0 WHERE id=?", (source_id,))
+            write(self.connection, at, source["owner"], "source.deactivate", source_id, {})
+
     def get(self, asset_id):
         row = self.connection.execute("SELECT * FROM assets WHERE id=?", (asset_id,)).fetchone()
         if row is None:

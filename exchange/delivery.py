@@ -34,7 +34,12 @@ class Delivery:
             if not self.grants.permits(source_id, recipient, purpose, at):
                 reasons.append({"source": source_id, "reason": "grant"})
             decision, policy_revision = self.policies.decision(asset["jurisdiction"], asset["classification"], purpose)
-            revisions[source_id] = policy_revision
+            revisions[source_id] = {
+                "jurisdiction": asset["jurisdiction"],
+                "classification": asset["classification"],
+                "purpose": purpose,
+                "revision": policy_revision,
+            }
             if decision != "allow":
                 reasons.append({"source": source_id, "reason": "policy"})
         if reasons:
